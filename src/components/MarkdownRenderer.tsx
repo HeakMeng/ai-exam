@@ -7,19 +7,33 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { CodeBlock } from './CodeBlock';
 import { AutomationStepper } from './AutomationStepper';
+import { RAGPipelineFlow } from './RAGPipelineFlow';
+import { ToolCallingLifecycleFlow } from './ToolCallingLifecycleFlow';
+import { HITLTrafficLight } from './HITLTrafficLight';
 
 interface MarkdownRendererProps {
   content: string;
 }
 
+const CUSTOM_COMPONENT_REGEX = /(<(?:AutomationStepper|RAGPipelineFlow|ToolCallingLifecycleFlow|HITLTrafficLight)\s*\/?>)/gi;
+
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-  const segments = content.split(/(\<AutomationStepper\s*\/?\>)/gi);
+  const segments = content.split(CUSTOM_COMPONENT_REGEX);
 
   return (
     <div className="prose prose-slate max-w-none text-slate-700 text-base sm:text-[17px] leading-relaxed">
       {segments.map((segment, index) => {
-        if (/\<AutomationStepper\s*\/?\>/i.test(segment)) {
+        if (/<AutomationStepper\s*\/?>/i.test(segment)) {
           return <AutomationStepper key={`stepper-${index}`} />;
+        }
+        if (/<RAGPipelineFlow\s*\/?>/i.test(segment)) {
+          return <RAGPipelineFlow key={`rag-flow-${index}`} />;
+        }
+        if (/<ToolCallingLifecycleFlow\s*\/?>/i.test(segment)) {
+          return <ToolCallingLifecycleFlow key={`tool-calling-${index}`} />;
+        }
+        if (/<HITLTrafficLight\s*\/?>/i.test(segment)) {
+          return <HITLTrafficLight key={`hitl-${index}`} />;
         }
         if (!segment.trim()) {
           return null;
