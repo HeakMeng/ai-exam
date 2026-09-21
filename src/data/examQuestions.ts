@@ -6,15 +6,15 @@ export const testQuestions: TestQuestion[] = [
     "category": "RAG Fundamentals",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "When configuring ChromaDB for local vector storage in Python, which client initialization method ensures that collections and HNSW vector indices are persisted to disk across application restarts?",
+    "question": "Why are specialized Vector Databases required for semantic search instead of traditional relational SQL databases with B-Tree indexes?",
     "options": [
-      "chromadb.PersistentClient(path=\"./chroma_db\")",
-      "chromadb.EphemeralClient(in_memory=True)",
-      "chromadb.SessionClient(cache_to_disk=True)",
-      "chromadb.HttpClient(host=\"127.0.0.1\", ssl=False)"
+      "Relational SQL databases only support binary images and cannot store plain text strings",
+      "Traditional B-Tree indexes only support exact keyword or 1D scalar range lookups, whereas Vector DBs perform Approximate Nearest Neighbor (ANN) search across high-dimensional semantic space",
+      "Vector databases execute all search queries on the client GPU, whereas SQL runs exclusively on disk",
+      "SQL queries always cost more API tokens than vector similarity searches"
     ],
-    "correctAnswer": 0,
-    "explanation": "chromadb.PersistentClient(path=...) creates an embedded ChromaDB instance that persists vector embeddings, SQLite metadata, and HNSW index files directly to the local filesystem. EphemeralClient() only keeps data in volatile RAM."
+    "correctAnswer": 1,
+    "explanation": "Traditional relational databases use B-Tree indexes optimized for exact matches or scalar ranges (e.g. WHERE price > 50). They cannot efficiently compute geometric distances (like Cosine similarity) across hundreds of dimensions. Vector databases use specialized spatial graph indices (like HNSW) for sub-linear Approximate Nearest Neighbor (ANN) search."
   },
   {
     "id": "Q-MCQ-SMP-02",
@@ -36,30 +36,30 @@ export const testQuestions: TestQuestion[] = [
     "category": "Workflow Engineering",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "In LangGraph, how do worker nodes communicate and pass state between each other during workflow execution?",
+    "question": "In a graph-based state machine workflow for AI systems, how do worker nodes pass data and communicate with each other?",
     "options": [
-      "Nodes mutate global operating system environment variables directly",
-      "Each node receives the current State dictionary as an argument and returns a partial dictionary that updates the state according to defined reducers",
-      "Nodes write intermediate pickle files to a shared NFS disk that downstream nodes poll via cron",
-      "Nodes cannot share data; each node operates in an isolated container without state access"
+      "Nodes communicate exclusively through external HTTP REST webhooks",
+      "Nodes receive the current state and return partial updates to a shared central State object passed along graph transitions",
+      "Nodes write raw temporary text files to the operating system disk",
+      "Nodes send compiled binary bytecode over network sockets"
     ],
     "correctAnswer": 1,
-    "explanation": "In LangGraph, nodes are Python functions that receive the current workflow State as input and return updates (a partial dict). LangGraph applies these updates to the shared state according to the reducer functions configured in the schema (such as overwrite by default, or append for operator.add)."
+    "explanation": "In graph-based workflow architectures, nodes do not call each other directly. Instead, they share a central State object: each node receives the current state, performs its task, and returns a dictionary of updates that the orchestrator merges back into the shared state."
   },
   {
     "id": "Q-MCQ-SMP-04",
     "category": "Workflow Engineering",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "In an agentic workflow built with LangGraph, what is the primary function of configuring a conditional edge using tools_condition after an LLM node?",
+    "question": "In an autonomous agent loop, what is the primary role of the conditional router placed immediately after the LLM execution step?",
     "options": [
-      "It re-encrypts the state checkpoint using AES-256 before persisting to SQLite",
-      "It inspects the LLM's response: routing to the 'tools' node if tool calls were requested, or to END if the model produced a final answer",
-      "It terminates the Python process immediately if the prompt exceeds 1000 tokens",
-      "It forces the LLM to recursively call itself in a synchronous loop until memory is exhausted"
+      "It re-encrypts the state checkpoint using AES-256 before persisting to disk",
+      "It inspects the model's output: routing to the tool execution step if tool calls were requested, or routing to completion if the model answered the user",
+      "It terminates the workflow immediately if the prompt exceeds 100 characters",
+      "It forces the LLM to call itself in an infinite loop until memory is exhausted"
     ],
     "correctAnswer": 1,
-    "explanation": "tools_condition is a built-in conditional routing edge in LangGraph that inspects the latest message generated by the model. If tool_calls exist in the AIMessage, it branches execution to the 'tools' execution node; if no tool calls are present, it directs execution to END to deliver the final response to the user."
+    "explanation": "In an agentic workflow, a conditional router evaluates the LLM's response. If the model emitted structured tool call requests, execution branches to the tool execution node. If the model produced a direct answer without tool calls, the loop terminates and delivers the final response to the user."
   },
   {
     "id": "Q-MCQ-SMP-05",
@@ -96,13 +96,13 @@ export const testQuestions: TestQuestion[] = [
     "category": "RAG Fundamentals",
     "type": "true_false",
     "difficulty": "simple",
-    "question": "ChromaDB can be run locally in Python as an embedded vector database without setting up a remote server or paying cloud subscription fees.",
+    "question": "An embedded (in-process) vector database runs directly inside the application process and filesystem without requiring an external server cluster or cloud subscription.",
     "options": [
       "True",
       "False"
     ],
     "correctAnswer": 0,
-    "explanation": "ChromaDB installs as a standard Python library and can store vectors directly in memory or a local directory without external servers or cloud dependencies."
+    "explanation": "True. Embedded vector databases (such as ChromaDB or SQLite-vss) run directly inside your application process, writing index files to local disk with zero network setup or external infrastructure overhead."
   },
   {
     "id": "Q-TF-SMP-02",
@@ -122,13 +122,13 @@ export const testQuestions: TestQuestion[] = [
     "category": "Workflow Engineering",
     "type": "true_false",
     "difficulty": "simple",
-    "question": "LangGraph workflows are strictly limited to one-way linear chains and cannot support cyclic loops or conditional branching.",
+    "question": "A standard Directed Acyclic Graph (DAG) workflow engine natively supports infinite cyclic retry loops and self-referential agent feedback by default.",
     "options": [
       "True",
       "False"
     ],
     "correctAnswer": 1,
-    "explanation": "LangGraph was specifically designed to support cyclic graphs, loops, and conditional edges, enabling agents to iteratively think, act, inspect results, and loop until a task is done."
+    "explanation": "False. By definition, a Directed Acyclic Graph (DAG) cannot contain cycles or feedback loops. Iterative agent loops, self-correction, and retries require a cyclic state machine."
   },
   {
     "id": "Q-TF-SMP-04",
@@ -161,9 +161,9 @@ export const testQuestions: TestQuestion[] = [
     "category": "RAG Fundamentals",
     "type": "fill_in_the_blank",
     "difficulty": "simple",
-    "question": "The lightweight, in-process vector database commonly used for local storage and prototyping in Python is ________.",
-    "correctAnswer": "ChromaDB",
-    "explanation": "ChromaDB is the popular open-source embedded vector database that runs directly in Python."
+    "question": "A vector database that runs directly inside your application process and writes index files to local disk without an external server is called an ________ vector database.",
+    "correctAnswer": "embedded",
+    "explanation": "An embedded (or in-process) vector database runs within the host application runtime, storing vector indices locally without requiring dedicated network services."
   },
   {
     "id": "Q-FITB-SMP-02",
@@ -179,9 +179,9 @@ export const testQuestions: TestQuestion[] = [
     "category": "Workflow Engineering",
     "type": "fill_in_the_blank",
     "difficulty": "simple",
-    "question": "In LangGraph, to compile an assembled StateGraph builder into an executable runnable application, the developer invokes the method `.________()`.",
+    "question": "Before an assembled state graph can execute, the developer must validate all nodes, edges, and schemas by invoking the graph builder's .________() method.",
     "correctAnswer": "compile",
-    "explanation": "Calling builder.compile() validates the graph structure and produces an executable CompiledGraph application ready for invocation or streaming."
+    "explanation": "Calling the compilation method (like .compile()) validates graph edges, entry points, and state schemas, converting the builder into an executable runnable application."
   },
   {
     "id": "Q-FITB-SMP-04",
@@ -197,18 +197,18 @@ export const testQuestions: TestQuestion[] = [
     "category": "Workflow Engineering",
     "type": "fill_in_the_blank",
     "difficulty": "simple",
-    "question": "In LangGraph, to accumulate new items into a list field in State rather than overwriting it, the field is wrapped in Annotated with the reducer function ________.",
-    "correctAnswer": "operator.add",
-    "explanation": "Annotated[List[BaseMessage], operator.add] instructs LangGraph to append newly returned messages to the existing list rather than overwriting the entire list."
+    "question": "In a state machine workflow, a function that specifies how new updates are merged into an existing state field (such as appending messages rather than overwriting them) is called a ________.",
+    "correctAnswer": "reducer",
+    "explanation": "A reducer function defines how updates merge into state. By default, keys overwrite existing values; an append reducer takes the existing list and appends new items to preserve history."
   },
   {
     "id": "Q-DIR-SMP-01",
     "category": "RAG Fundamentals",
     "type": "direct",
     "difficulty": "simple",
-    "question": "Which vector database is best for simple local storage and prototyping in Python, and why?",
-    "correctAnswer": "ChromaDB, because it runs embedded in-process or on local disk with zero external server infrastructure.",
-    "explanation": "ChromaDB requires zero infrastructure, installs via pip, and runs directly in Python, making it the premier choice for local testing and lightweight applications."
+    "question": "What is the primary advantage of using an embedded (in-process) vector store over a distributed client-server vector database for prototyping and development?",
+    "correctAnswer": "Embedded vector stores run directly inside the Python process and persist to local disk with zero server infrastructure, setup overhead, or network latency.",
+    "explanation": "Embedded stores run in-process with zero deployment overhead, while distributed databases (like Milvus, Qdrant, or Pinecone) require running Docker containers or cloud clusters designed for multi-node scale."
   },
   {
     "id": "Q-DIR-SMP-02",
@@ -256,30 +256,30 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-MCQ-02",
     "category": "Workflow Engineering",
     "type": "mcq",
-    "question": "In LangGraph, why is operator.add attached to list fields in a TypedDict state schema (e.g. messages: Annotated[List[BaseMessage], operator.add])?",
+    "question": "In workflow state management, why is an append reducer function configured on conversational history fields instead of using default state updating?",
     "options": [
-      "To act as a reducer so new node returns append to message history rather than overwriting it",
-      "To calculate the total token count and character length of all conversation messages",
-      "To sort messages chronologically by timestamp before model invocation",
-      "To automatically convert plain string inputs into typed BaseMessage instances"
+      "Default state updating overwrites the field with the latest node output, which would erase prior conversation turns unless an append reducer accumulates new items",
+      "An append reducer calculates the total token count and character length across all conversation messages",
+      "An append reducer encrypts conversational data with AES-256 before persisting checkpoints",
+      "Default state updating converts string text into binary vector embeddings automatically"
     ],
     "correctAnswer": 0,
-    "explanation": "In LangGraph, state updates returned from nodes overwrite existing fields by default. Wrapping a field with Annotated[..., operator.add] defines a reducer function that appends newly returned messages to the existing list rather than replacing it.",
+    "explanation": "In state machine workflows, node returns overwrite state keys by default. For conversation history (messages), an append reducer is required so that each new message returned by a node or user is appended to the list rather than replacing the entire prior dialogue.",
     "difficulty": "hard"
   },
   {
     "id": "Q-MCQ-11",
     "category": "Workflow Engineering",
     "type": "mcq",
-    "question": "In LangChain Expression Language (LCEL), what occurs at runtime if a RunnableBranch evaluates all condition predicates to False, and no default fallback runnable was provided?",
+    "question": "Why do production CI/CD test suites use hermetic mocking for LLM API calls rather than sending live requests to external model providers during automated tests?",
     "options": [
-      "The branch returns None silently and proceeds to the next downstream node",
-      "The branch loops back and retries the first condition with exponential backoff",
-      "The branch invokes the underlying LLM to guess the appropriate condition branch",
-      "LangChain raises a runtime exception, immediately crashing the active workflow execution"
+      "External LLM APIs block all requests coming from continuous integration server IP addresses",
+      "Live API calls introduce nondeterminism, network flakiness, latency, and recurring token costs; mock fixtures provide fast, deterministic, zero-cost regression tests",
+      "Unit tests are legally prohibited from executing API calls that return natural language text",
+      "Mock fixtures automatically fine-tune the LLM weights on the CI/CD runner"
     ],
-    "correctAnswer": 3,
-    "explanation": "In RunnableBranch, providing a default fallback runnable is mandatory. If all condition branches evaluate to False and no fallback is specified, LangChain raises an exception and halts execution.",
+    "correctAnswer": 1,
+    "explanation": "Hermetic testing isolates unit tests from external dependencies. Live LLM calls are nondeterministic (slight token variations break naive assertions), slow (adding seconds to test runs), vulnerable to rate limits and network outages, and incur cumulative financial costs. Mocking responses with recorded fixtures ensures fast, 100% deterministic CI/CD builds.",
     "difficulty": "hard"
   },
   {
@@ -301,15 +301,15 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-MCQ-13",
     "category": "Workflow Engineering",
     "type": "mcq",
-    "question": "In LangGraph checkpoint persistence, what is the primary role of the thread_id passed in the configurable dictionary (e.g., {'configurable': {'thread_id': 'sess_123'}})?",
+    "question": "In workflow checkpoint persistence, what is the primary architectural purpose of a session identifier (such as thread_id) passed in the runtime configuration?",
     "options": [
-      "To determine the number of parallel CPU threads allocated for graph execution",
-      "To set the maximum execution timeout in seconds before canceling the graph",
-      "To serve as the partition key isolating and resuming independent state snapshots for each user session",
-      "To specify the cryptographic hash salt for API token verification"
+      "To determine the number of parallel CPU worker threads allocated for execution",
+      "To set the maximum execution timeout in seconds before canceling background jobs",
+      "To serve as the partition key that isolates and resumes independent state snapshots for each user or conversation session",
+      "To specify the cryptographic salt for authenticating model API keys"
     ],
     "correctAnswer": 2,
-    "explanation": "thread_id acts as the unique partition key in LangGraph state storage. It isolates execution history between different conversations, allowing specific sessions to pause, resume, or replay from checkpoints.",
+    "explanation": "A thread or session ID serves as the partition key in workflow state persistence. It isolates state history across different user sessions, allowing specific workflows to pause, resume from checkpoints, or rewind without interfering with other concurrent executions.",
     "difficulty": "hard"
   },
   {
@@ -346,15 +346,15 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-MCQ-16",
     "category": "Workflow Engineering",
     "type": "mcq",
-    "question": "Which of the following orchestration frameworks is specifically engineered as a cyclic state machine runtime with built-in checkpointer persistence for multi-agent loops?",
+    "question": "What is the fundamental architectural limitation of a Directed Acyclic Graph (DAG) when building autonomous AI agents, and why are Cyclic State Machines preferred?",
     "options": [
-      "LlamaIndex QueryEngine",
-      "LangChain LCEL RunnableSequence",
-      "Airflow DAG Scheduler",
-      "LangGraph"
+      "DAGs cannot connect to vector databases, while state machines have native SQL drivers",
+      "DAGs forbid cycles by definition, making iterative multi-turn feedback, self-correction, and tool retry loops impossible without a cyclic state machine",
+      "DAGs execute only on single-core CPUs, whereas cyclic state machines run exclusively on GPUs",
+      "DAGs cannot accept string text inputs, requiring binary protocol buffers"
     ],
-    "correctAnswer": 3,
-    "explanation": "LangChain/LCEL is strictly a Directed Acyclic Graph (DAG). LangGraph was created specifically to support cyclic graph state machines, error-recovery loops, human-in-the-loop pauses, and persistent multi-agent execution.",
+    "correctAnswer": 1,
+    "explanation": "A Directed Acyclic Graph (DAG) by definition has no cycles—execution moves strictly forward in one direction. Autonomous agents require cyclic feedback loops (ReAct, reflection, tool retries) where execution evaluates intermediate outputs and loops back to previous nodes until completion.",
     "difficulty": "hard"
   },
   {
@@ -605,11 +605,11 @@ export const testQuestions: TestQuestion[] = [
     "options": [
       "The LLM connects directly via TCP sockets to databases and executes SQL commands inside its neural weights",
       "The LLM must be granted root administrator privileges in the host operating system to execute scripts",
-      "The LLM acts strictly as a planner that outputs structured function call specifications; the host application executes the code and returns a ToolMessage",
+      "The LLM acts strictly as a reasoning engine that emits structured invocation requests (such as JSON); the host application validates, executes the code in its environment, and passes the result back to the model",
       "The LLM executes Python bytecode directly inside its transformer attention heads"
     ],
     "correctAnswer": 2,
-    "explanation": "LLMs cannot execute code or access networks. The model generates a structured invocation request (function name and arguments), the host application runs the code, and the output is returned to the model as a ToolMessage.",
+    "explanation": "The Cardinal Rule: LLMs never execute code or access networks directly. The model produces a structured text request (function name and JSON arguments), the host application executes the tool in its secure environment, and the result is passed back to the model context for synthesis.",
     "difficulty": "hard"
   },
   {
@@ -747,13 +747,13 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-TF-03",
     "category": "Workflow Engineering",
     "type": "true_false",
-    "question": "When implementing conditional routing with RunnableBranch in LangChain, providing a default fallback branch is optional and can be omitted without runtime risk.",
+    "question": "When implementing conditional routing in a production AI workflow, providing a default fallback route is strictly optional and can be safely omitted without runtime risk.",
     "options": [
       "True",
       "False"
     ],
     "correctAnswer": 1,
-    "explanation": "False. In RunnableBranch, providing a fallback runnable is mandatory. If the classifier outputs an unmapped label and no fallback is configured, LangChain raises an exception and crashes the workflow.",
+    "explanation": "False. A default fallback route is mandatory in production workflows. If an incoming user query fails to match any defined intent or conditional rule, the absence of a fallback route causes an unhandled routing failure or runtime exception.",
     "difficulty": "hard"
   },
   {
@@ -851,13 +851,13 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-TF-11",
     "category": "Workflow Engineering",
     "type": "true_false",
-    "question": "In LangGraph, conditional routing from a node can evaluate runtime state and dynamically direct execution flow to different target nodes or to the END node.",
+    "question": "In a graph-based workflow engine, conditional routing edges evaluate the current runtime state to dynamically direct execution flow to different specialized nodes or to the terminal END node.",
     "options": [
       "True",
       "False"
     ],
     "correctAnswer": 0,
-    "explanation": "True. LangGraph supports conditional edges via builder.add_conditional_edges(), which evaluate state values and route to specific nodes or terminate at END.",
+    "explanation": "True. Conditional edges inspect current state values (such as classification labels or tool call requests) and dynamically choose which downstream node executes next or whether to conclude execution.",
     "difficulty": "hard"
   },
   {
@@ -883,7 +883,7 @@ export const testQuestions: TestQuestion[] = [
       "False"
     ],
     "correctAnswer": 1,
-    "explanation": "False. By definition, a Directed Acyclic Graph contains NO cycles. Loops, iterative retries, and multi-turn agent feedback require cyclic state machines (like LangGraph).",
+    "explanation": "False. By definition, a Directed Acyclic Graph (DAG) contains no cycles. For workflows that require multi-turn agent feedback, reflection, and iterative retries, a cyclic state machine is required.",
     "difficulty": "hard"
   },
   {
@@ -981,13 +981,13 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-TF-21",
     "category": "Autonomous Agents",
     "type": "true_false",
-    "question": "In Model Context Protocol (MCP), tool servers can communicate with host clients over standard input/output (stdio) or Server-Sent Events (SSE).",
+    "question": "When an MCP tool server communicates over standard input/output (stdio), it must write diagnostic logs to stderr and never stdout, because stdout is reserved strictly for JSON-RPC protocol framing.",
     "options": [
       "True",
       "False"
     ],
     "correctAnswer": 0,
-    "explanation": "True. The MCP specification supports stdio for fast local process communication and SSE/HTTP for remote distributed servers.",
+    "explanation": "True. In MCP stdio transport, stdout is the dedicated communication pipe for JSON-RPC framing. Printing debug text or logs to stdout corrupts the JSON parser and breaks the host connection; all diagnostic logging must be directed to stderr.",
     "difficulty": "hard"
   },
   {
@@ -1020,40 +1020,40 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-TF-24",
     "category": "Advanced RAG",
     "type": "true_false",
-    "question": "BM25 scoring leverages Term Frequency (TF) and Inverse Document Frequency (IDF), making it highly effective for exact keyword and acronym matching.",
+    "question": "In the BM25 ranking algorithm, the k1 parameter acts as an anti-spam saturation cap, preventing a document from gaining infinite score simply by repeating a keyword dozens of times.",
     "options": [
       "True",
       "False"
     ],
     "correctAnswer": 0,
-    "explanation": "True. BM25 is the gold standard for lexical sparse search, rewarding exact keyword matches and penalizing widespread common words via IDF.",
+    "explanation": "True. In classic TF-IDF, term frequency scales linearly without limit, allowing keyword-stuffed documents to dominate. BM25 introduces k1 (typically 1.2 to 2.0) to asymptotically saturate term frequency, capping the maximum score gain from repeated terms.",
     "difficulty": "hard"
   },
   {
     "id": "Q-FITB-01",
     "category": "Workflow Engineering",
     "type": "fill_in_the_blank",
-    "question": "In LangChain Expression Language (LCEL), conditional execution where queries are routed to specialized chains based on runtime evaluation is implemented using the ________ class.",
-    "correctAnswer": "RunnableBranch",
-    "explanation": "RunnableBranch defines a series of (condition, runnable) pairs evaluated in sequence, with a mandatory default fallback runnable to prevent pipeline crashes when inputs do not match any specified condition.",
+    "question": "In workflow engineering, the architectural pattern where an incoming request is classified and directed to one of several specialized execution paths based on runtime predicates is called conditional ________.",
+    "correctAnswer": "routing",
+    "explanation": "Conditional routing evaluates dynamic inputs or state values to send execution down specialized sub-graphs, chains, or tools based on criteria such as intent, language, or complexity.",
     "difficulty": "hard"
   },
   {
     "id": "Q-FITB-02",
     "category": "Workflow Engineering",
     "type": "fill_in_the_blank",
-    "question": "In LangGraph, state persistence across process crashes or human approval pauses is enabled by passing a storage adapter known as a ________ (such as SqliteSaver or PostgresSaver).",
+    "question": "In state machine workflows, state persistence across process restarts, multi-turn human approvals, or crash recovery is managed by a storage adapter known as a ________.",
     "correctAnswer": "checkpointer",
-    "explanation": "A checkpointer snapshots the workflow state at every node transition, allowing long-running tasks to be paused, resumed, or rewound to previous checkpoints.",
+    "explanation": "A checkpointer serializes and saves the complete workflow state snapshot after every node transition, allowing long-running tasks to be paused, resumed, inspected, or rewound.",
     "difficulty": "hard"
   },
   {
     "id": "Q-FITB-03",
     "category": "Workflow Engineering",
     "type": "fill_in_the_blank",
-    "question": "The configuration key used in LangGraph to partition and isolate state checkpoints between different user conversation sessions is called the ________.",
+    "question": "In workflow state persistence, the unique configuration identifier used to partition, isolate, and resume checkpoints for a specific user or conversation session is the ________ (or session ID).",
     "correctAnswer": "thread_id",
-    "explanation": "thread_id acts as the partition key in LangGraph state storage, ensuring each user's execution history remains isolated and recoverable.",
+    "explanation": "The thread_id acts as the primary partition key in checkpoint databases, isolating execution state between concurrent users and enabling stateful resumption across turns.",
     "difficulty": "hard"
   },
   {
@@ -1105,9 +1105,9 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-FITB-09",
     "category": "Autonomous Agents",
     "type": "fill_in_the_blank",
-    "question": "In standard LLM tool calling lifecycles, the host application transmits function execution results back into the conversation context packaged as a ________.",
-    "correctAnswer": "ToolMessage",
-    "explanation": "In LangChain and OpenAI messaging schemas, external function outputs must be returned as a ToolMessage referencing the corresponding tool_call_id.",
+    "question": "In standard LLM chat APIs and tool calling protocols, the host application returns external function execution results back to the model under the conversation role named '________'.",
+    "correctAnswer": "tool",
+    "explanation": "Standard model chat schemas define roles like 'system', 'user', 'assistant', and 'tool'. When a function completes execution, its output is injected into history as a 'tool' role message containing the function results and matching tool_call_id.",
     "difficulty": "hard"
   },
   {
@@ -1121,11 +1121,11 @@ export const testQuestions: TestQuestion[] = [
   },
   {
     "id": "Q-FITB-11",
-    "category": "Workflow Engineering",
+    "category": "Advanced RAG",
     "type": "fill_in_the_blank",
-    "question": "In LangGraph, state fields that accumulate items across iterations rather than overwriting values use a function known as a ________ (such as operator.add).",
-    "correctAnswer": "reducer",
-    "explanation": "A reducer function defines how new values returned from nodes combine with existing state (e.g. appending to a message list).",
+    "question": "In the BM25 retrieval algorithm, adjusting the b parameter applies a document ________ penalty to ensure short, concise documents can compete fairly against 500-page manuals.",
+    "correctAnswer": "length",
+    "explanation": "The b parameter in BM25 (typically set around 0.75) controls document length normalization, penalizing overly long documents so that a concise document with 2 matching keywords ranks higher than an encyclopedic document that only mentions the word in passing.",
     "difficulty": "hard"
   },
   {
@@ -1267,9 +1267,9 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-DIR-11",
     "category": "Workflow Engineering",
     "type": "direct",
-    "question": "Why does LangChain Expression Language (LCEL) require a fallback runnable in a RunnableBranch?",
-    "correctAnswer": "To prevent workflow exceptions and crashes if input does not match any branch condition",
-    "explanation": "If no branch condition evaluates to true and no default fallback runnable is registered, LCEL raises an unhandled exception that halts the entire workflow.",
+    "question": "Why must conditional routing mechanisms in production AI workflows always include a default fallback route?",
+    "correctAnswer": "To prevent workflow crashes and unhandled exceptions when incoming user queries or unexpected intents fail to match any defined conditional branch.",
+    "explanation": "If an intent classifier produces an unmapped label or an unexpected query arrives, the absence of a fallback route causes a branching failure and crashes the pipeline. A default route safely handles ambiguous requests or routes to general fallback agents.",
     "difficulty": "hard"
   },
   {
@@ -1321,10 +1321,10 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-ANA-01",
     "category": "Workflow Engineering",
     "type": "code_analysis",
-    "question": "Code Analysis: In the LangGraph State definition below, explain why `operator.add` is attached to `messages` via `Annotated`. What runtime failure would occur if `messages: list[BaseMessage]` was defined without it?",
-    "codeSnippet": "from typing import Annotated, TypedDict\nimport operator\nfrom langchain_core.messages import BaseMessage\n\nclass AgentState(TypedDict):\n    query: str\n    messages: Annotated[list[BaseMessage], operator.add]",
-    "correctAnswer": "operator.add acts as a reducer that appends new node message outputs to existing conversation history instead of overwriting the list",
-    "explanation": "In LangGraph, node returns overwrite state keys by default. Attaching operator.add via Annotated declares a reducer that appends newly returned messages to the existing list, preserving conversational history.",
+    "question": "Code Analysis: In the workflow state definition below, explain the purpose of attaching an `append_messages` reducer to the `messages` field. What architectural bug or state failure occurs if `messages: list[dict]` is defined with default state behavior?",
+    "codeSnippet": "from typing import Annotated, TypedDict\n\ndef append_messages(existing: list, new_items: list) -> list:\n    return existing + new_items\n\nclass WorkflowState(TypedDict):\n    query: str\n    messages: Annotated[list[dict], append_messages]",
+    "correctAnswer": "The append reducer ensures newly generated messages are appended to conversational history; default state behavior would overwrite the list, erasing earlier conversation context.",
+    "explanation": "In workflow state machines, node returns overwrite state keys by default. Attaching an append reducer ensures each node's output adds to the existing message list rather than replacing it. Without it, the agent suffers amnesia on every node transition.",
     "difficulty": "hard"
   },
   {
@@ -1351,10 +1351,10 @@ export const testQuestions: TestQuestion[] = [
     "id": "Q-ANA-04",
     "category": "Workflow Engineering",
     "type": "code_analysis",
-    "question": "Code Analysis: In the LangChain Expression Language (LCEL) RunnableBranch below, why is `default_support_chain` passed as the last positional argument without a boolean lambda condition? What occurs if it is omitted and an unmatched intent arrives?",
-    "codeSnippet": "from langchain_core.runnables import RunnableBranch\n\nrouter_chain = RunnableBranch(\n    (lambda x: x[\"intent\"] == \"billing\", billing_chain),\n    (lambda x: x[\"intent\"] == \"technical\", tech_chain),\n    default_support_chain\n)",
-    "correctAnswer": "It serves as the mandatory fallback runnable; without it, LCEL raises an unhandled exception and crashes if no branch matches",
-    "explanation": "In LCEL RunnableBranch, the final argument is the required default fallback runnable. If all conditional branches evaluate to False and no fallback runnable is registered, LangChain throws a runtime exception.",
+    "question": "Code Analysis: In the conditional routing function below, why is `fallback_handler` passed as the final parameter and invoked when `intent` is not found in `routes`? What failure occurs in production if this fallback is omitted?",
+    "codeSnippet": "def route_query(request: dict, routes: dict, fallback_handler):\n    intent = request.get(\"intent\")\n    target_handler = routes.get(intent, fallback_handler)\n    return target_handler(request)",
+    "correctAnswer": "It acts as the default fallback handler to safely process queries that match no specific condition, preventing unhandled exceptions and pipeline crashes.",
+    "explanation": "Production routing systems must always provide a default fallback path. If an incoming user query has an unrecognized or null intent, omitting a fallback causes the router to raise a KeyError/TypeError or fail silently, crashing the user request.",
     "difficulty": "hard"
   },
   {
@@ -1382,10 +1382,10 @@ export const testQuestions: TestQuestion[] = [
     "category": "Workflow Engineering",
     "type": "code_write",
     "difficultyLevel": "Level 2",
-    "question": "Write a complete Python implementation using LangGraph that defines a TypedDict State schema, builds a StateGraph with two sequential nodes (`fetch_data` -> `process_data`), connects edges from `START` to `END`, and compiles the workflow runnable.",
+    "question": "Write a complete Python implementation using a state graph pattern that defines a TypedDict State schema, builds a StateGraph with two sequential nodes (`fetch_data` -> `process_data`), connects edges from `START` to `END`, and compiles the workflow runnable.",
     "codeSnippet": "from typing import TypedDict\nfrom langgraph.graph import StateGraph, START, END\n\nclass WorkflowState(TypedDict):\n    data: str\n    result: str\n\ndef fetch_data(state: WorkflowState) -> dict:\n    return {\"data\": \"raw_payload\"}\n\ndef process_data(state: WorkflowState) -> dict:\n    return {\"result\": state[\"data\"].upper()}\n\n# Build and compile graph:\nbuilder = StateGraph(WorkflowState)\nbuilder.add_node(\"fetch\", fetch_data)\nbuilder.add_node(\"process\", process_data)\nbuilder.add_edge(START, \"fetch\")\nbuilder.add_edge(\"fetch\", \"process\")\nbuilder.add_edge(\"process\", END)\n\napp = builder.compile()",
     "correctAnswer": "builder.compile()",
-    "explanation": "Demonstrates LangGraph orchestration: defining a typed state schema, declaring node functions, adding START/node/END transitions, and compiling into an executable runnable.",
+    "explanation": "Demonstrates state graph orchestration: defining a typed state schema, declaring node functions, adding START/node/END transitions, and compiling into an executable runnable.",
     "difficulty": "hard"
   },
   {
@@ -1426,10 +1426,10 @@ export const testQuestions: TestQuestion[] = [
     "category": "Workflow Engineering",
     "type": "code_write",
     "difficultyLevel": "Level 2",
-    "question": "Write a Python function `build_router_chain(billing_runnable, tech_runnable, fallback_runnable)` that constructs and returns an LCEL `RunnableBranch` routing by input dictionary key `'intent'`.",
-    "codeSnippet": "from langchain_core.runnables import RunnableBranch\n\ndef build_router_chain(billing_runnable, tech_runnable, fallback_runnable):\n    return RunnableBranch(\n        (lambda x: x.get(\"intent\") == \"billing\", billing_runnable),\n        (lambda x: x.get(\"intent\") == \"technical\", tech_runnable),\n        fallback_runnable\n    )",
-    "correctAnswer": "RunnableBranch(",
-    "explanation": "Constructs a deterministic LCEL RunnableBranch with conditional lambda predicates and a mandatory fallback runnable.",
+    "question": "Write a Python function `build_router(billing_handler, tech_handler, fallback_handler)` that returns an intent routing function `route(request: dict)`. It executes `billing_handler` for intent \"billing\", `tech_handler` for \"technical\", and `fallback_handler` for any other or missing intent.",
+    "codeSnippet": "def build_router(billing_handler, tech_handler, fallback_handler):\n    def route(request: dict):\n        intent = request.get(\"intent\")\n        if intent == \"billing\":\n            return billing_handler(request)\n        elif intent == \"technical\":\n            return tech_handler(request)\n        return fallback_handler(request)\n    return route",
+    "correctAnswer": "fallback_handler(request)",
+    "explanation": "Constructs a robust conditional router with predicate checks and a mandatory fallback handler to prevent unhandled routing exceptions.",
     "difficulty": "hard"
   },
   {
@@ -1460,10 +1460,10 @@ export const testQuestions: TestQuestion[] = [
     "type": "code_write",
     "difficultyLevel": "Level 1",
     "difficulty": "simple",
-    "question": "Write the single line of Python code to initialize a persistent ChromaDB client that saves vector data to the local directory `'./chroma_db'`.",
-    "codeSnippet": "import chromadb\n\n# Initialize local persistent ChromaDB client:\n",
-    "correctAnswer": "client = chromadb.PersistentClient(path=\"./chroma_db\")",
-    "explanation": "`client = chromadb.PersistentClient(path='./chroma_db')` initializes an in-process persistent ChromaDB store on local disk."
+    "question": "Write the single line of Python code using `numpy` to compute the cosine similarity (dot product) between two unit-normalized 1D embedding vectors `u` and `v`.",
+    "codeSnippet": "import numpy as np\n\n# Compute similarity of two unit-normalized vectors u and v:\nsimilarity = np.dot(u, v)",
+    "correctAnswer": "np.dot(u, v)",
+    "explanation": "For vectors that are already unit-normalized (length = 1.0), the cosine similarity is mathematically identical to their dot product: np.dot(u, v)."
   },
   {
     "id": "Q-CODE-L1-03",
@@ -1471,10 +1471,10 @@ export const testQuestions: TestQuestion[] = [
     "type": "code_write",
     "difficultyLevel": "Level 1",
     "difficulty": "simple",
-    "question": "In LangGraph, write the single line of code to connect an edge from the `START` node to a worker node named `'retrieve'` on a graph builder named `builder`.",
-    "codeSnippet": "from langgraph.graph import StateGraph, START, END\n\n# Add edge transition from START to 'retrieve':\n",
+    "question": "In a graph-based workflow engine, write the single line of code to connect a directed edge from the entry point `START` to a worker node named `'retrieve'` on a graph builder named `builder`.",
+    "codeSnippet": "from langgraph.graph import StateGraph, START, END\n\n# Add edge transition from START to 'retrieve':\nbuilder.add_edge(START, \"retrieve\")",
     "correctAnswer": "builder.add_edge(START, \"retrieve\")",
-    "explanation": "`builder.add_edge(START, 'retrieve')` routes incoming input payload directly into the first node of the graph."
+    "explanation": "`builder.add_edge(START, \"retrieve\")` routes incoming input payload directly into the first node of the graph."
   },
   {
     "id": "Q-CODE-L1-04",
@@ -1482,10 +1482,10 @@ export const testQuestions: TestQuestion[] = [
     "type": "code_write",
     "difficultyLevel": "Level 1",
     "difficulty": "simple",
-    "question": "In LangGraph, write the single line of code that compiles a `StateGraph` builder named `builder` into an executable application runnable named `app`.",
-    "codeSnippet": "# Compile the graph builder into an executable runnable:\n",
+    "question": "Write the single line of code that compiles an assembled workflow graph builder named `builder` into an executable application runnable named `app`.",
+    "codeSnippet": "# Compile the graph builder into an executable runnable:\napp = builder.compile()",
     "correctAnswer": "app = builder.compile()",
-    "explanation": "`app = builder.compile()` validates graph edges and compiles the structure into an executable LangGraph runnable."
+    "explanation": "`app = builder.compile()` validates graph edges and compiles the structure into an executable runnable application."
   },
   {
     "id": "Q-CODE-L1-05",
@@ -1504,10 +1504,10 @@ export const testQuestions: TestQuestion[] = [
     "type": "code_write",
     "difficultyLevel": "Level 1",
     "difficulty": "simple",
-    "question": "In LangChain Expression Language (LCEL), write the single line of pipe syntax that connects a prompt template named `prompt` directly into a chat model named `model` to form `chain`.",
-    "codeSnippet": "# Create LCEL runnable chain connecting prompt to model:\n",
+    "question": "In modern Python workflow chaining syntax (using the Unix-style pipe operator), write the single line of code that connects `prompt` directly into `model` to define `chain`.",
+    "codeSnippet": "# Chain prompt template into chat model using pipe syntax:\nchain = prompt | model",
     "correctAnswer": "chain = prompt | model",
-    "explanation": "LCEL uses the pipe operator `|` to stream output from prompt into model."
+    "explanation": "The pipe operator `|` chains sequential runnables, automatically passing the formatted output of prompt as the input to model."
   },
   {
     "id": "Q-CODE-L1-07",
