@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { Question, StatusFilter, MetricCounts, UserProgress } from '../types/exam';
 import { INITIAL_QUESTIONS } from '../data/questions';
 import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 
 const STORAGE_KEY = 'ai_eng_exam_review_progress_v1';
 
@@ -164,14 +165,26 @@ export function useExamState() {
 
   // Reset all progress
   const resetAllProgress = useCallback(() => {
-    if (typeof window !== 'undefined' && window.confirm('Reset all your review, mastered, and saved progress?')) {
-      setProgress({
-        mastered: [],
-        review: [],
-        saved: [],
-      });
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    toast('Reset all your progress?', {
+      description: 'This will reset all your review, mastered, and saved progress.',
+      action: {
+        label: 'Confirm Reset',
+        onClick: () => {
+          setProgress({
+            mastered: [],
+            review: [],
+            saved: [],
+          });
+          localStorage.removeItem(STORAGE_KEY);
+          toast.success('All progress has been reset.');
+        },
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {},
+      },
+      duration: 8000,
+    });
   }, []);
 
   // Metric counts

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Space_Grotesk, JetBrains_Mono, Kantumruy_Pro } from 'next/font/google';
 import 'katex/dist/katex.min.css';
 import './globals.css';
+import { Toaster } from 'sonner';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -37,6 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${kantumruyPro.variable} ${jetbrainsMono.variable} scroll-smooth`}>
       <body className="bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-[#FF5722] selection:text-white">
+        <Toaster richColors position="top-center" closeButton />
         {children}
       </body>
     </html>

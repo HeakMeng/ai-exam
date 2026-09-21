@@ -8,6 +8,7 @@ import type {
   UserExamProgress,
 } from '../types/examData';
 import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 
 const STORAGE_KEY = 'ai_eng_study_platform_v3';
 
@@ -154,6 +155,11 @@ export function useExamReview() {
   const toggleSaved = useCallback((id: string) => {
     setProgress((prev) => {
       const isSaved = prev.saved.includes(id);
+      if (isSaved) {
+        toast.info('Removed from bookmarks');
+      } else {
+        toast.success('Saved to bookmarks');
+      }
       return {
         ...prev,
         saved: isSaved ? prev.saved.filter((x) => x !== id) : [...prev.saved, id],
@@ -177,6 +183,9 @@ export function useExamReview() {
           origin: { y: 0.8 },
           colors: ['#FF5722', '#2563EB', '#10B981'],
         });
+        toast.success('Lesson marked as Mastered! 🎉');
+      } else {
+        toast.info('Lesson unmarked from Mastered');
       }
 
       return {
@@ -209,14 +218,26 @@ export function useExamReview() {
 
   // Reset Progress
   const resetProgress = useCallback(() => {
-    if (typeof window !== 'undefined' && window.confirm('Reset your progress and bookmarked items?')) {
-      setProgress({
-        mastered: [],
-        saved: [],
-        review: [],
-      });
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    toast('Reset your progress and bookmarks?', {
+      description: 'This will reset all your review, mastered, and saved progress.',
+      action: {
+        label: 'Confirm Reset',
+        onClick: () => {
+          setProgress({
+            mastered: [],
+            saved: [],
+            review: [],
+          });
+          localStorage.removeItem(STORAGE_KEY);
+          toast.success('All progress and bookmarks have been reset.');
+        },
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {},
+      },
+      duration: 8000,
+    });
   }, []);
 
   // Exam Mode Handlers
@@ -230,6 +251,7 @@ export function useExamReview() {
     setExamSessionId((prev) => prev + 1);
     setActiveMode('exam');
     setIsExamModalOpen(false);
+    toast.success('Exam simulation started. Good luck!');
   }, []);
 
   const handleCancelExam = useCallback(() => {
@@ -238,14 +260,27 @@ export function useExamReview() {
 
   const handleExitExam = useCallback(() => {
     setActiveMode('study');
+    toast.info('Exited exam mode and returned to Study Guide.');
   }, []);
 
   const handleResetExam = useCallback(() => {
-    if (typeof window !== 'undefined' && window.confirm('Restart exam simulation with newly shuffled questions?')) {
-      setShuffledQuestions(generateBalancedExam(testQuestions));
-      setExamTimeRemaining(7200);
-      setExamSessionId((prev) => prev + 1);
-    }
+    toast('Restart exam simulation?', {
+      description: 'All questions will be reshuffled and the timer will reset to 2 hours.',
+      action: {
+        label: 'Restart',
+        onClick: () => {
+          setShuffledQuestions(generateBalancedExam(testQuestions));
+          setExamTimeRemaining(7200);
+          setExamSessionId((prev) => prev + 1);
+          toast.success('Exam restarted with newly shuffled questions.');
+        },
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {},
+      },
+      duration: 8000,
+    });
   }, []);
 
   // Mode Selection router
