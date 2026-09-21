@@ -93,9 +93,10 @@ export function gradeSingleQuestion(
     const cleanCorrect = String(q.correctAnswer).trim().toLowerCase().replace(/['"`]/g, '');
 
     const isMatch =
-      cleanUser === cleanCorrect ||
-      cleanUser.includes(cleanCorrect) ||
-      cleanCorrect.includes(cleanUser);
+      cleanUser.length > 0 &&
+      (cleanUser === cleanCorrect ||
+        cleanUser.includes(cleanCorrect) ||
+        (cleanUser.length >= 3 && cleanCorrect.includes(cleanUser)));
 
     return {
       questionId: q.id,

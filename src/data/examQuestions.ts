@@ -6,90 +6,90 @@ export const testQuestions: TestQuestion[] = [
     "category": "RAG Fundamentals",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "If an AI engineer needs a simple, lightweight embedded vector database for local prototyping and storage with zero external server infrastructure, which database is recommended?",
+    "question": "When configuring ChromaDB for local vector storage in Python, which client initialization method ensures that collections and HNSW vector indices are persisted to disk across application restarts?",
     "options": [
-      "Pinecone (Managed Cloud)",
-      "ChromaDB (Local In-Process)",
-      "Elasticsearch (Distributed Cluster)",
-      "Google BigQuery (Data Warehouse)"
+      "chromadb.PersistentClient(path=\"./chroma_db\")",
+      "chromadb.EphemeralClient(in_memory=True)",
+      "chromadb.SessionClient(cache_to_disk=True)",
+      "chromadb.HttpClient(host=\"127.0.0.1\", ssl=False)"
     ],
-    "correctAnswer": 1,
-    "explanation": "ChromaDB runs in-process or writes directly to local disk with zero infrastructure setup ('pip install chromadb'), making it the ideal choice for local prototyping and collections under 100k vectors."
+    "correctAnswer": 0,
+    "explanation": "chromadb.PersistentClient(path=...) creates an embedded ChromaDB instance that persists vector embeddings, SQLite metadata, and HNSW index files directly to the local filesystem. EphemeralClient() only keeps data in volatile RAM."
   },
   {
     "id": "Q-MCQ-SMP-02",
     "category": "RAG Fundamentals",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "What does the acronym RAG stand for in modern AI system architecture?",
+    "question": "In production enterprise AI systems, what is the primary architectural advantage of using Retrieval-Augmented Generation (RAG) over Fine-Tuning for answering questions on proprietary internal documents?",
     "options": [
-      "Real-time Autonomous Graph",
-      "Recursive Attention Generation",
-      "Retrieval-Augmented Generation",
-      "Remote Asynchronous Gateway"
+      "RAG eliminates the need for an embedding model or vector search index entirely",
+      "RAG provides dynamic, verifiable source citations and allows immediate document updates without retraining model weights",
+      "RAG modifies the internal neural weights of the model so it memorizes private PDFs permanently",
+      "RAG guarantees zero-latency token generation regardless of the volume of ingested documents"
     ],
-    "correctAnswer": 2,
-    "explanation": "RAG stands for Retrieval-Augmented Generation, an architecture that retrieves relevant document chunks from an external database and augments the LLM prompt with this context."
+    "correctAnswer": 1,
+    "explanation": "RAG grounds generation on external non-parametric context at inference time. This allows real-time document additions/deletions without retraining, verifiable citations back to original document chunks, and strict per-user document access control."
   },
   {
     "id": "Q-MCQ-SMP-03",
     "category": "Workflow Engineering",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "In LangGraph, which special symbol/constant represents the entry point where workflow execution begins?",
+    "question": "In LangGraph, how do worker nodes communicate and pass state between each other during workflow execution?",
     "options": [
-      "START",
-      "INIT",
-      "ENTRY",
-      "ROOT"
+      "Nodes mutate global operating system environment variables directly",
+      "Each node receives the current State dictionary as an argument and returns a partial dictionary that updates the state according to defined reducers",
+      "Nodes write intermediate pickle files to a shared NFS disk that downstream nodes poll via cron",
+      "Nodes cannot share data; each node operates in an isolated container without state access"
     ],
-    "correctAnswer": 0,
-    "explanation": "In LangGraph, the special constant START defines the graph's entry point, connecting the initial input payload to the first worker node via builder.add_edge(START, 'node_name')."
+    "correctAnswer": 1,
+    "explanation": "In LangGraph, nodes are Python functions that receive the current workflow State as input and return updates (a partial dict). LangGraph applies these updates to the shared state according to the reducer functions configured in the schema (such as overwrite by default, or append for operator.add)."
   },
   {
     "id": "Q-MCQ-SMP-04",
     "category": "Workflow Engineering",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "In LangGraph, which special symbol/constant represents the termination point where workflow execution concludes?",
+    "question": "In an agentic workflow built with LangGraph, what is the primary function of configuring a conditional edge using tools_condition after an LLM node?",
     "options": [
-      "HALT",
-      "STOP",
-      "END",
-      "EXIT"
+      "It re-encrypts the state checkpoint using AES-256 before persisting to SQLite",
+      "It inspects the LLM's response: routing to the 'tools' node if tool calls were requested, or to END if the model produced a final answer",
+      "It terminates the Python process immediately if the prompt exceeds 1000 tokens",
+      "It forces the LLM to recursively call itself in a synchronous loop until memory is exhausted"
     ],
-    "correctAnswer": 2,
-    "explanation": "The special constant END represents the terminal node in LangGraph. Connecting an edge to END indicates that the workflow run has concluded."
+    "correctAnswer": 1,
+    "explanation": "tools_condition is a built-in conditional routing edge in LangGraph that inspects the latest message generated by the model. If tool_calls exist in the AIMessage, it branches execution to the 'tools' execution node; if no tool calls are present, it directs execution to END to deliver the final response to the user."
   },
   {
     "id": "Q-MCQ-SMP-05",
     "category": "RAG Fundamentals",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "Which mathematical distance metric evaluates vector similarity strictly based on the angle between two vectors, regardless of their magnitude?",
+    "question": "When comparing vector embeddings where vector magnitude varies (such as text embeddings from documents of different token lengths), why is Cosine Similarity preferred over raw Euclidean Distance (L2)?",
     "options": [
-      "Euclidean Distance (L2)",
-      "Manhattan Distance (L1)",
-      "Cosine Similarity",
-      "Hamming Distance"
+      "Cosine similarity measures the angle between vectors, preventing longer documents with larger vector magnitudes from falsely appearing dissimilar to short queries",
+      "Euclidean distance cannot be computed for vectors exceeding 3 dimensions",
+      "Cosine similarity automatically converts 768-dimensional float32 vectors into 8-bit integers",
+      "Cosine similarity executes without floating-point arithmetic on GPUs"
     ],
-    "correctAnswer": 2,
-    "explanation": "Cosine similarity measures the cosine of the angle between two multidimensional vectors, normalizing for vector length so document chunks of different lengths can be compared purely on semantic direction."
+    "correctAnswer": 0,
+    "explanation": "Raw Euclidean distance is sensitive to vector magnitude (length). Cosine similarity measures the cosine of the angle between vectors, normalizing for magnitude so that short queries and long document passages sharing the same semantic direction remain closely matched."
   },
   {
     "id": "Q-MCQ-SMP-06",
     "category": "Autonomous Agents",
     "type": "mcq",
     "difficulty": "simple",
-    "question": "What is the cardinal rule regarding how Large Language Models execute tools in an agent system?",
+    "question": "What is the fundamental architectural rule regarding how Large Language Models execute tools in an agentic system?",
     "options": [
-      "The LLM executes the tool code directly inside its neural network weights",
-      "The model requests the action by emitting structured arguments; the host application executes it",
-      "The tool calls the LLM to verify Python syntax before running",
-      "Tools run inside the user's web browser without server involvement"
+      "The LLM executes shell commands and database writes directly inside its neural network weights",
+      "The model merely selects the tool and emits structured arguments (e.g. JSON); the host application harness validates, sandboxes, and executes the tool",
+      "Tools execute inside the client's web browser without server intervention or validation",
+      "The tool calls the LLM as a subprocess to verify Python AST syntax before running"
     ],
     "correctAnswer": 1,
-    "explanation": "LLMs are text-in, text-out engines that cannot run OS commands or databases directly. The model chooses and formats the tool call parameters, but the application harness securely executes the underlying code."
+    "explanation": "Large Language Models are text-in, text-out neural models that have no native runtime access to filesystems, network sockets, or databases. The LLM simply emits structured tool call schemas (arguments), and the surrounding host harness is strictly responsible for security gating, input validation, and execution."
   },
   {
     "id": "Q-TF-SMP-01",
@@ -179,9 +179,9 @@ export const testQuestions: TestQuestion[] = [
     "category": "Workflow Engineering",
     "type": "fill_in_the_blank",
     "difficulty": "simple",
-    "question": "In LangGraph, the starting entry point of a workflow graph is represented by the special node constant ________.",
-    "correctAnswer": "START",
-    "explanation": "The START constant designates the initial node receiving user input in LangGraph."
+    "question": "In LangGraph, to compile an assembled StateGraph builder into an executable runnable application, the developer invokes the method `.________()`.",
+    "correctAnswer": "compile",
+    "explanation": "Calling builder.compile() validates the graph structure and produces an executable CompiledGraph application ready for invocation or streaming."
   },
   {
     "id": "Q-FITB-SMP-04",
@@ -194,12 +194,12 @@ export const testQuestions: TestQuestion[] = [
   },
   {
     "id": "Q-FITB-SMP-05",
-    "category": "Autonomous Agents",
+    "category": "Workflow Engineering",
     "type": "fill_in_the_blank",
     "difficulty": "simple",
-    "question": "The Model Context Protocol is commonly abbreviated as ________.",
-    "correctAnswer": "MCP",
-    "explanation": "Model Context Protocol is abbreviated as MCP."
+    "question": "In LangGraph, to accumulate new items into a list field in State rather than overwriting it, the field is wrapped in Annotated with the reducer function ________.",
+    "correctAnswer": "operator.add",
+    "explanation": "Annotated[List[BaseMessage], operator.add] instructs LangGraph to append newly returned messages to the existing list rather than overwriting the entire list."
   },
   {
     "id": "Q-DIR-SMP-01",
