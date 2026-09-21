@@ -107,7 +107,7 @@ const STAGES: StageInfo[] = [
     borderColor: 'border-emerald-200',
     details: {
       whatItDoes: 'The model reads injected context and synthesizes a concise, truthful answer strictly backed by the cited document sources.',
-      keyTools: 'GPT-4o, Claude 3.5 Sonnet, Llama 3, RAGAS Evaluation',
+      keyTools: 'GPT-4o, Claude 3.5 Sonnet, Qwen 2.5, Llama 3',
       examAxiom: 'Enforce strict refusal: if evidence is missing, state "I do not have enough information" rather than guessing.',
     },
   },
