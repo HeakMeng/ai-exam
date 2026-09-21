@@ -39,12 +39,12 @@ export const LessonModuleCard: React.FC<LessonModuleCardProps> = ({
   return (
     <article
       id={module.id}
-      className={`rounded-2xl border transition-all duration-300 bg-white overflow-hidden group ${
+      className={`rounded-2xl border transition-all duration-200 bg-white overflow-hidden group ${
         isMastered
           ? 'border-emerald-200/90 shadow-sm'
           : isSaved
           ? 'border-orange-200/90 shadow-sm'
-          : 'border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-0.5 hover:border-slate-300'
+          : 'border-slate-200/90 shadow-sm hover:shadow-md hover:border-slate-300'
       }`}
     >
       {/* Clickable Card Header */}
