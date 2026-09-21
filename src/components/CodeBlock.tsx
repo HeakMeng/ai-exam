@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Copy, Check, Terminal } from 'lucide-react';
-import { toast } from 'sonner';
+import { sileo } from 'sileo';
 
 interface CodeBlockProps {
   code: string;
@@ -99,7 +99,10 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'python',
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
     setCopied(true);
-    toast.success('Code copied to clipboard!');
+    sileo.success({
+      title: 'Copied to Clipboard',
+      description: 'Code snippet copied successfully.',
+    });
     setTimeout(() => setCopied(false), 2000);
   };
 

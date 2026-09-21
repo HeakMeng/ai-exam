@@ -22,7 +22,7 @@
     "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
-    "sonner": "^2.0.8",
+    "sileo": "^0.1.5",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {

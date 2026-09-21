@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { Question, StatusFilter, MetricCounts, UserProgress } from '../types/exam';
 import { INITIAL_QUESTIONS } from '../data/questions';
 import confetti from 'canvas-confetti';
-import { toast } from 'sonner';
+import { sileo } from 'sileo';
 
 const STORAGE_KEY = 'ai_eng_exam_review_progress_v1';
 
@@ -15,6 +15,9 @@ export function useExamState() {
     review: [],
     saved: [],
   });
+
+  const progressRef = useRef(progress);
+  progressRef.current = progress;
 
   // Client-side hydration from localStorage
   useEffect(() => {
@@ -90,32 +93,30 @@ export function useExamState() {
 
   // Toggle Mastered
   const toggleMastered = useCallback((id: string) => {
-    setProgress(prev => {
-      const isMastered = prev.mastered.includes(id);
-      const newMastered = isMastered
-        ? prev.mastered.filter(qId => qId !== id)
-        : [...prev.mastered, id];
+    const isMastered = progressRef.current.mastered.includes(id);
+    const newMastered = isMastered
+      ? progressRef.current.mastered.filter(qId => qId !== id)
+      : [...progressRef.current.mastered, id];
 
-      // If user marks as mastered, remove from review list if present
-      const newReview = isMastered ? prev.review : prev.review.filter(qId => qId !== id);
+    // If user marks as mastered, remove from review list if present
+    const newReview = isMastered ? progressRef.current.review : progressRef.current.review.filter(qId => qId !== id);
 
-      // Trigger confetti celebration if just reached 100%
-      if (!isMastered && newMastered.length === INITIAL_QUESTIONS.length) {
-        try {
-          confetti({
-            particleCount: 120,
-            spread: 70,
-            origin: { y: 0.6 },
-          });
-        } catch (_) {}
-      }
+    setProgress(prev => ({
+      ...prev,
+      mastered: newMastered,
+      review: newReview,
+    }));
 
-      return {
-        ...prev,
-        mastered: newMastered,
-        review: newReview,
-      };
-    });
+    // Trigger confetti celebration outside setState if just reached 100%
+    if (!isMastered && newMastered.length === INITIAL_QUESTIONS.length) {
+      try {
+        confetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      } catch (_) {}
+    }
   }, []);
 
   // Toggle Review
@@ -165,10 +166,11 @@ export function useExamState() {
 
   // Reset all progress
   const resetAllProgress = useCallback(() => {
-    toast('Reset all your progress?', {
+    sileo.action({
+      title: 'Reset All Progress?',
       description: 'This will reset all your review, mastered, and saved progress.',
-      action: {
-        label: 'Confirm Reset',
+      button: {
+        title: 'Confirm Reset',
         onClick: () => {
           setProgress({
             mastered: [],
@@ -176,12 +178,11 @@ export function useExamState() {
             saved: [],
           });
           localStorage.removeItem(STORAGE_KEY);
-          toast.success('All progress has been reset.');
+          sileo.success({
+            title: 'Progress Reset',
+            description: 'All progress has been reset successfully.',
+          });
         },
-      },
-      cancel: {
-        label: 'Cancel',
-        onClick: () => {},
       },
       duration: 8000,
     });

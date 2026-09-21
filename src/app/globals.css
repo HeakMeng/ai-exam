@@ -68,3 +68,65 @@
     rgba(148, 163, 184, 0.04) 20px
   );
 }
+
+/* -------------------------------------------------------------
+   Custom Sileo Toast Theme (AI Engineering Portal Styling)
+   ------------------------------------------------------------- */
+:root {
+  --sileo-duration: 4500ms;
+  --sileo-width: 360px;
+  --sileo-state-success: #10B981;
+  --sileo-state-loading: #64748B;
+  --sileo-state-error: #EF4444;
+  --sileo-state-warning: #F59E0B;
+  --sileo-state-info: #3B82F6;
+  --sileo-state-action: #FF5722;
+}
+
+[data-sileo-viewport] {
+  z-index: 99999 !important;
+}
+
+[data-sileo-toast] {
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  filter: drop-shadow(0 14px 28px rgba(15, 23, 42, 0.45)) drop-shadow(0 0 10px rgba(255, 87, 34, 0.18));
+}
+
+[data-sileo-title] {
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: 0.85rem;
+}
+
+[data-sileo-description] {
+  color: #E2E8F0 !important;
+  font-size: 0.825rem;
+  line-height: 1.35;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+}
+
+[data-sileo-button] {
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.775rem;
+  letter-spacing: 0.02em;
+  border-radius: 9999px !important;
+  background-color: #FF5722 !important;
+  color: #FFFFFF !important;
+  padding: 0.35rem 0.85rem !important;
+  box-shadow: 0 2px 8px rgba(255, 87, 34, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+[data-sileo-button]:hover {
+  background-color: #E64A19 !important;
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.55);
+  transform: translateY(-1px);
+}
+
+[data-sileo-button]:active {
+  transform: translateY(0);
+}
+
