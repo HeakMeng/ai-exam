@@ -19,6 +19,7 @@ export type QuestionType =
   | 'true_false'
   | 'fill_in_the_blank'
   | 'direct'
+  | 'code_analysis'
   | 'code_write';
 
 export interface TestQuestion {
@@ -30,6 +31,8 @@ export interface TestQuestion {
   options?: string[];
   correctAnswer: string | number;
   explanation: string;
+  difficultyLevel?: 'Level 1' | 'Level 2';
+  difficulty?: 'simple' | 'hard';
 }
 
 export type QuestionTypeFilter = 'all' | QuestionType;

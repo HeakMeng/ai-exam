@@ -72,7 +72,7 @@ export const ExamGateModal: React.FC<ExamGateModalProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
-              <span><strong>Questions Composition:</strong> 43 Questions (10 Multiple Choice, 10 True/False, 10 Fill in Blank, 10 Direct Questions, 3 Code Written).</span>
+              <span><strong>Questions Composition:</strong> 47 Questions (10 Multiple Choice, 10 True/False, 10 Fill in Blank, 10 Direct, 2 Code Analysis, 5 Code Written across 2 Levels).</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />

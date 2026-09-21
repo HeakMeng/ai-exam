@@ -3,6 +3,7 @@ import { lessonModules, testQuestions, Category } from '../data/examData';
 import type {
   LessonModule,
   TestQuestion,
+  QuestionType,
   QuestionTypeFilter,
   ActiveMode,
   UserExamProgress,
@@ -42,17 +43,56 @@ function shuffleQuestionOptions(q: TestQuestion): TestQuestion {
   };
 }
 
-// Generate balanced exam: exactly 10 MCQ, 10 True/False, 10 Fill in Blank, 10 Direct, 3 Code Written (43 total)
-function generateBalancedExam(pool: TestQuestion[]): TestQuestion[] {
-  const mcqs = shuffleArray(pool.filter((q) => q.type === 'mcq'))
-    .slice(0, 10)
-    .map(shuffleQuestionOptions);
-  const tf = shuffleArray(pool.filter((q) => q.type === 'true_false')).slice(0, 10);
-  const fitb = shuffleArray(pool.filter((q) => q.type === 'fill_in_the_blank')).slice(0, 10);
-  const direct = shuffleArray(pool.filter((q) => q.type === 'direct')).slice(0, 10);
-  const codeWrite = shuffleArray(pool.filter((q) => q.type === 'code_write')).slice(0, 3);
+// Helper to select a controlled difficulty mix (e.g. 3-4 simple questions + 6-7 hard questions)
+function selectDifficultyMixed(
+  pool: TestQuestion[],
+  type: QuestionType,
+  simpleTarget: number,
+  hardTarget: number
+): TestQuestion[] {
+  const allOfType = pool.filter((q) => q.type === type);
+  const simplePool = shuffleArray(allOfType.filter((q) => q.difficulty === 'simple'));
+  const hardPool = shuffleArray(allOfType.filter((q) => q.difficulty !== 'simple'));
 
-  return [...mcqs, ...tf, ...fitb, ...direct, ...codeWrite];
+  const chosenSimple = simplePool.slice(0, simpleTarget);
+  const neededHard = simpleTarget + hardTarget - chosenSimple.length;
+  const chosenHard = hardPool.slice(0, neededHard);
+
+  const combined = [...chosenSimple, ...chosenHard];
+  if (combined.length < simpleTarget + hardTarget) {
+    const chosenIds = new Set(combined.map((q) => q.id));
+    const remaining = shuffleArray(allOfType.filter((q) => !chosenIds.has(q.id)));
+    combined.push(...remaining.slice(0, simpleTarget + hardTarget - combined.length));
+  }
+
+  return shuffleArray(combined);
+}
+
+// Generate balanced exam: 10 MCQ (4 simple, 6 hard), 10 T/F (4 simple, 6 hard), 
+// 10 Fill (4 simple, 6 hard), 10 Direct (4 simple, 6 hard), 2 Code Analysis (1 simple, 1 hard), 
+// 5 Code Written (3 Level 1, 2 Level 2) = 47 total questions (100.0 pts)
+function generateBalancedExam(pool: TestQuestion[]): TestQuestion[] {
+  const mcqs = selectDifficultyMixed(pool, 'mcq', 4, 6).map(shuffleQuestionOptions);
+  const tf = selectDifficultyMixed(pool, 'true_false', 4, 6);
+  const fitb = selectDifficultyMixed(pool, 'fill_in_the_blank', 4, 6);
+  const direct = selectDifficultyMixed(pool, 'direct', 4, 6);
+  const codeAnalysis = selectDifficultyMixed(pool, 'code_analysis', 1, 1);
+
+  // 5 Code Written questions: 3 Level 1 (Foundation) + 2 Level 2 (Advanced Pipelines)
+  const l1 = shuffleArray(
+    pool.filter((q) => q.type === 'code_write' && q.difficultyLevel === 'Level 1')
+  ).slice(0, 3);
+  const l2 = shuffleArray(
+    pool.filter((q) => q.type === 'code_write' && q.difficultyLevel === 'Level 2')
+  ).slice(0, 2);
+
+  const fallbackCode = pool.filter((q) => q.type === 'code_write' && !q.difficultyLevel);
+  const codeWrite = [...l1, ...l2];
+  if (codeWrite.length < 5) {
+    codeWrite.push(...shuffleArray(fallbackCode).slice(0, 5 - codeWrite.length));
+  }
+
+  return [...mcqs, ...tf, ...fitb, ...direct, ...codeAnalysis, ...codeWrite];
 }
 
 export function useExamReview() {
@@ -397,6 +437,7 @@ export function useExamReview() {
       true_false: 0,
       fill_in_the_blank: 0,
       direct: 0,
+      code_analysis: 0,
       code_write: 0,
     };
     shuffledQuestions.forEach((q) => {

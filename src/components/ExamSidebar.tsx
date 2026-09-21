@@ -4,6 +4,7 @@ import {
   ListFilter,
   CheckSquare,
   HelpCircle,
+  FileCode2,
   Code2,
   PenTool,
   ArrowLeft,
@@ -29,6 +30,7 @@ const QUESTION_TYPE_OPTIONS: QuestionTypeOption[] = [
   { id: 'true_false', label: 'True / False', icon: CheckSquare },
   { id: 'fill_in_the_blank', label: 'Fill in the Blank', icon: PenTool },
   { id: 'direct', label: 'Direct Questions', icon: HelpCircle },
+  { id: 'code_analysis', label: 'Code Analysis', icon: FileCode2 },
   { id: 'code_write', label: 'Code Written', icon: Code2 },
 ];
 
