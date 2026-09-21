@@ -23,9 +23,29 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
+// Helper to shuffle options and re-map correctAnswer index for MCQ questions
+function shuffleQuestionOptions(q: TestQuestion): TestQuestion {
+  if (q.type !== 'mcq' || !q.options || typeof q.correctAnswer !== 'number') {
+    return { ...q };
+  }
+
+  const originalOptions = q.options;
+  const correctOptionText = originalOptions[q.correctAnswer];
+  const shuffledOptions = shuffleArray(originalOptions);
+  const newCorrectIndex = shuffledOptions.indexOf(correctOptionText);
+
+  return {
+    ...q,
+    options: shuffledOptions,
+    correctAnswer: newCorrectIndex,
+  };
+}
+
 // Generate balanced exam: exactly 10 MCQ, 10 True/False, 10 Fill in Blank, 10 Direct, 3 Code Written (43 total)
 function generateBalancedExam(pool: TestQuestion[]): TestQuestion[] {
-  const mcqs = shuffleArray(pool.filter((q) => q.type === 'mcq')).slice(0, 10);
+  const mcqs = shuffleArray(pool.filter((q) => q.type === 'mcq'))
+    .slice(0, 10)
+    .map(shuffleQuestionOptions);
   const tf = shuffleArray(pool.filter((q) => q.type === 'true_false')).slice(0, 10);
   const fitb = shuffleArray(pool.filter((q) => q.type === 'fill_in_the_blank')).slice(0, 10);
   const direct = shuffleArray(pool.filter((q) => q.type === 'direct')).slice(0, 10);
@@ -48,6 +68,9 @@ export function useExamReview() {
   const [shuffledQuestions, setShuffledQuestions] = useState<TestQuestion[]>(() =>
     generateBalancedExam(testQuestions)
   );
+
+  // Session ID to force re-render/reset of exam state on new exam runs
+  const [examSessionId, setExamSessionId] = useState(1);
 
   // Question Type filter in Exam Mode
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionTypeFilter>('all');
@@ -204,6 +227,7 @@ export function useExamReview() {
   const handleConfirmStartExam = useCallback(() => {
     setShuffledQuestions(generateBalancedExam(testQuestions));
     setExamTimeRemaining(7200); // 2 hours
+    setExamSessionId((prev) => prev + 1);
     setActiveMode('exam');
     setIsExamModalOpen(false);
   }, []);
@@ -220,6 +244,7 @@ export function useExamReview() {
     if (typeof window !== 'undefined' && window.confirm('Restart exam simulation with newly shuffled questions?')) {
       setShuffledQuestions(generateBalancedExam(testQuestions));
       setExamTimeRemaining(7200);
+      setExamSessionId((prev) => prev + 1);
     }
   }, []);
 
@@ -338,6 +363,7 @@ export function useExamReview() {
     handleResetExam,
     examTimeRemaining,
     shuffledQuestions,
+    examSessionId,
     selectedQuestionType,
     setSelectedQuestionType,
     questionTypeCounts,

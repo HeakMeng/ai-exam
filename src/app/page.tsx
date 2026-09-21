@@ -20,6 +20,7 @@ export default function Home() {
     handleResetExam,
     examTimeRemaining,
     shuffledQuestions,
+    examSessionId,
     selectedQuestionType,
     setSelectedQuestionType,
     questionTypeCounts,
@@ -115,6 +116,7 @@ export default function Home() {
           />
         ) : (
           <PracticeExamView
+            key={examSessionId}
             questions={shuffledQuestions}
             selectedType={selectedQuestionType}
             onSelectType={setSelectedQuestionType}
